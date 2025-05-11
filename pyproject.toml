@@ -12,4 +12,5 @@ dependencies = [
     "scikit-learn>=1.6.1",
     "spacy>=3.8.5",
     "streamlit>=1.45.0",
+    "xgboost>=3.0.0",
 ]
