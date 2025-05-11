@@ -88,16 +88,20 @@ def main():
     if course_key not in st.session_state or not st.session_state[course_key]:
         with st.spinner(f"Finding course recommendations for {selected_career['title']}..."):
             # Get prioritized skills to develop
-            priority_skills = selected_skill_gaps["prioritized_skills"]
-            
-            # Recommend courses for these skills
-            course_recommendations = recommend_courses(priority_skills, user_profile)
-            
-            # Format recommendations for display
-            formatted_recommendations = format_course_recommendations(course_recommendations)
-            
-            # Save to session state
-            st.session_state[course_key] = formatted_recommendations
+            if selected_skill_gaps and "prioritized_skills" in selected_skill_gaps:
+                priority_skills = selected_skill_gaps["prioritized_skills"]
+                
+                # Recommend courses for these skills
+                course_recommendations = recommend_courses(priority_skills, user_profile)
+                
+                # Format recommendations for display
+                formatted_recommendations = format_course_recommendations(course_recommendations)
+                
+                # Save to session state
+                st.session_state[course_key] = formatted_recommendations
+            else:
+                st.error("No prioritized skills found. Please try a different career.")
+                return
     
     # Display course recommendations
     if course_key in st.session_state and st.session_state[course_key]:
@@ -182,61 +186,7 @@ def display_course_recommendations(course_recommendations, selected_career, skil
         with tab:
             display_skill_courses(skill, skill_courses)
     
-    # Learning plan section
-    st.subheader("Your Personalized Learning Plan")
-    
-    # Create a learning plan based on prioritized skills
-    learning_plan_data = []
-    
-    current_month = 0
-    for i, skill in enumerate(available_skills[:5]):  # Limit to top 5 skills
-        # Simple estimate: 1-2 months per skill
-        duration = 1 + (i % 2)  # Alternate between 1 and 2 months
-        
-        # Find a recommended course for this skill
-        recommended_course = None
-        if skill in course_recommendations and course_recommendations[skill]:
-            recommended_course = course_recommendations[skill][0]
-        
-        learning_plan_data.append({
-            'Skill': skill,
-            'Start Month': current_month,
-            'Duration': duration,
-            'End Month': current_month + duration,
-            'Course': recommended_course['title'] if recommended_course else "To be determined",
-            'Provider': recommended_course['provider'] if recommended_course else ""
-        })
-        
-        current_month += duration
-    
-    # Create a Gantt chart
-    fig = px.timeline(
-        learning_plan_data, 
-        x_start="Start Month", 
-        x_end="End Month", 
-        y="Skill",
-        color="Skill",
-        title="Recommended Learning Timeline (Months)",
-        labels={"Skill": "Skill to Learn"},
-        hover_data=["Course", "Provider"]
-    )
-    
-    fig.update_yaxes(autorange="reversed")
-    
-    st.plotly_chart(fig)
-    
-    # Learning plan explanation
-    st.markdown("""
-    ### How to Use This Learning Plan
-    
-    1. **Focus on one skill at a time** - Start with the first skill in the timeline
-    2. **Complete the recommended course** - Check off courses as you complete them
-    3. **Apply your new skills** through projects to reinforce learning
-    4. **Track your progress** against the suggested timeline
-    5. **Reassess your skill gaps** after completing the plan
-    
-    This timeline is an estimate based on typical learning durations. Adjust it to fit your schedule and learning pace.
-    """)
+
     
     # Next steps
     st.subheader("Additional Resources")
@@ -254,16 +204,12 @@ def display_course_recommendations(course_recommendations, selected_career, skil
     st.markdown("---")
     st.subheader("What's Next?")
     
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     with col1:
         if st.button("View Skill Gap Analysis"):
             # Navigate to skill gap page
             pass
     with col2:
-        if st.button("Explore Career Trajectory"):
-            # Navigate to career trajectory page
-            pass
-    with col3:
         if st.button("Return to Career Recommendations"):
             # Navigate back to recommendations page
             pass

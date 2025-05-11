@@ -23,8 +23,6 @@ def main():
         st.session_state.career_recommendations = []
     if 'skill_gaps' not in st.session_state:
         st.session_state.skill_gaps = {}
-    if 'career_path' not in st.session_state:
-        st.session_state.career_path = {}
     if 'courses' not in st.session_state:
         st.session_state.courses = []
     
@@ -58,7 +56,6 @@ def main():
         - Assess your personality and interests
         - Recommend optimal career paths using advanced machine learning
         - Identify skill gaps and provide upskilling recommendations
-        - Visualize potential career trajectories
         - Discover top companies hiring for your recommended roles
         
         ### How to Use
@@ -67,8 +64,7 @@ def main():
         3. Take the **Personality Assessment** to factor in your interests
         4. Explore your personalized **Career Recommendations** with hiring companies
         5. Review **Skill Gap Analysis** to understand improvement areas
-        6. Discover your potential **Career Trajectory**
-        7. Find **Upskilling Recommendations** to enhance your prospects
+        6. Find **Upskilling Recommendations** to enhance your prospects
         
         Get started by navigating through the pages on the sidebar!
         """)
@@ -87,7 +83,6 @@ def main():
         ("Personality Assessment", bool(st.session_state.personality_results)),
         ("Career Recommendations", bool(st.session_state.career_recommendations)),
         ("Skill Gap Analysis", bool(st.session_state.skill_gaps)),
-        ("Career Trajectory", bool(st.session_state.career_path)),
         ("Upskilling Recommendations", bool(st.session_state.courses))
     ]
     
