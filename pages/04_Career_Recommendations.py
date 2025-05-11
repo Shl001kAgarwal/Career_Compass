@@ -182,21 +182,16 @@ def display_recommendations(recommendations, user_profile):
     Now that you've reviewed your career matches, here are the next steps:
     
     1. **Explore Skill Gaps**: Understand what skills you need to develop for each career
-    2. **View Career Trajectories**: See potential career progression paths for each role
-    3. **Get Upskilling Recommendations**: Find specific courses to build required skills
+    2. **Get Upskilling Recommendations**: Find specific courses to build required skills
     """)
     
     # Navigation buttons
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     with col1:
         if st.button("View Skill Gap Analysis"):
             # Navigate to skill gap page
             pass
     with col2:
-        if st.button("Explore Career Trajectories"):
-            # Navigate to career trajectory page
-            pass
-    with col3:
         if st.button("Find Upskilling Opportunities"):
             # Navigate to upskilling page
             pass
