@@ -22,8 +22,8 @@ class MLCareerRecommender:
         """Initialize the ML-based career recommendation engine"""
         self.pipeline = None
         self.vectorizer = None
-        self.job_titles = None
-        self.feature_names = None
+        self.job_titles = np.array([])
+        self.feature_names = []
         self.classifier = None
         self.trained = False
     
@@ -54,8 +54,12 @@ class MLCareerRecommender:
         # Create feature processing pipeline
         # 1. TF-IDF vectorization for skills text
         self.vectorizer = TfidfVectorizer(max_features=500, stop_words='english')
-        skills_text_matrix = self.vectorizer.fit_transform(X['skills_text'])
-        skills_text = skills_text_matrix.toarray()
+        try:
+            skills_text_matrix = self.vectorizer.fit_transform(X['skills_text'])
+            skills_text = skills_text_matrix.toarray()
+        except Exception as e:
+            st.error(f"Error in vectorization: {str(e)}")
+            return False
         
         # Store feature names for later use
         self.feature_names = self.vectorizer.get_feature_names_out()
@@ -103,19 +107,56 @@ class MLCareerRecommender:
         user_skills_text = " ".join(user_skills)
         
         # Transform user skills using the vectorizer
-        user_features_matrix = self.vectorizer.transform([user_skills_text])
-        user_features = user_features_matrix.toarray()
+        if self.vectorizer is None:
+            st.error("Vectorizer not initialized")
+            return []
+            
+        try:
+            user_features_matrix = self.vectorizer.transform([user_skills_text])
+            user_features = user_features_matrix.toarray()
+        except Exception as e:
+            st.error(f"Error transforming user skills: {str(e)}")
+            return []
         
         # Predict probabilities for each job title
-        job_probabilities = self.classifier.predict_proba(user_features)
+        if self.classifier is None:
+            st.error("Classifier not initialized")
+            return []
+            
+        try:
+            job_probabilities = self.classifier.predict_proba(user_features)
+        except Exception as e:
+            st.error(f"Error predicting probabilities: {str(e)}")
+            return []
         
         # Process the probabilities and get top job titles
         job_scores = {}
+        
+        # Make sure job_titles is not empty
+        if len(self.job_titles) == 0:
+            st.error("No job titles available for recommendation")
+            return []
+            
         for i, job_title in enumerate(self.job_titles):
-            # Get the positive class probability for this job title
-            class_idx = list(self.job_titles).index(job_title)
-            prob = job_probabilities[class_idx][0][1] if len(job_probabilities) > class_idx else 0
-            job_scores[job_title] = prob
+            try:
+                # Get the positive class probability for this job title
+                class_idx = i  # Use index directly instead of searching again
+                
+                # Handle different structures of job_probabilities based on classifier
+                if isinstance(job_probabilities, list) and len(job_probabilities) > class_idx:
+                    probs = job_probabilities[class_idx]
+                    if hasattr(probs, 'shape') and probs.shape[0] > 0:
+                        # Get probability of positive class (class 1)
+                        prob = probs[0][1] if probs.shape[1] > 1 else probs[0][0]
+                    else:
+                        prob = 0.5  # Default probability
+                else:
+                    prob = 0.5  # Default probability
+                    
+                job_scores[job_title] = prob
+            except Exception:
+                # If there's any error, assign a default score
+                job_scores[job_title] = 0.5
         
         # Apply RIASEC weighting if available
         if user_profile["personality"] and "riasec" in user_profile["personality"]:
@@ -208,19 +249,27 @@ class MLCareerRecommender:
         
         job_idx = np.where(self.job_titles == job_title)[0][0]
         
+        # Check if classifier and estimators are available
+        if self.classifier is None or not hasattr(self.classifier, 'estimators_'):
+            return {}
+            
         # Get the feature importance for this job title
-        importances = self.classifier.estimators_[job_idx].feature_importances_
-        
-        # Map feature importance to feature names
-        importance_dict = {}
-        for i, importance in enumerate(importances):
-            if i < len(self.feature_names):
-                importance_dict[self.feature_names[i]] = importance
-        
-        # Sort by importance
-        importance_dict = {k: v for k, v in sorted(importance_dict.items(), key=lambda item: item[1], reverse=True)}
-        
-        return importance_dict
+        try:
+            importances = self.classifier.estimators_[job_idx].feature_importances_
+            
+            # Map feature importance to feature names
+            importance_dict = {}
+            for i, importance in enumerate(importances):
+                if i < len(self.feature_names):
+                    importance_dict[self.feature_names[i]] = float(importance)
+            
+            # Sort by importance
+            importance_dict = {k: v for k, v in sorted(importance_dict.items(), key=lambda item: item[1], reverse=True)}
+            
+            return importance_dict
+        except (IndexError, AttributeError):
+            # Handle cases where the classifier structure is not as expected
+            return {}
 
 # Create a singleton instance
 ml_recommender = MLCareerRecommender()

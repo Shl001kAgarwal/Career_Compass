@@ -114,7 +114,7 @@ def display_recommendations(recommendations, user_profile):
                 barmode='group', title="Salary Range Comparison",
                 labels={'value': 'Annual Salary ($)', 'variable': 'Salary Point'})
     
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, key="salary_comparison")
     
     # Skill match comparison chart
     st.markdown("#### Skill Match Comparison")
@@ -129,7 +129,49 @@ def display_recommendations(recommendations, user_profile):
                 barmode='group', title="Career Match Score Comparison",
                 labels={'value': 'Percentage (%)', 'variable': 'Metric'})
     
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, key="skill_comparison")
+    
+    # Top companies hiring comparison
+    st.markdown("#### Top Companies Hiring")
+    
+    # Create a list of top companies for each career
+    company_data = []
+    for rec in recommendations:
+        if 'top_companies' in rec and rec['top_companies']:
+            # Take top 2 companies from each career
+            for i, company in enumerate(rec['top_companies'][:2]):
+                company_data.append({
+                    'Career': rec['title'],
+                    'Company': company['name'],
+                    'Avg. Salary': company['avg_salary'],
+                    'Location': company['location'],
+                    'Hiring Frequency': company['hiring_frequency']
+                })
+    
+    if company_data:
+        company_df = pd.DataFrame(company_data)
+        
+        # Create a scatter plot of companies by hiring frequency and salary
+        fig = px.scatter(
+            company_df, 
+            x='Hiring Frequency', 
+            y='Avg. Salary',
+            color='Career',
+            size='Hiring Frequency',
+            hover_name='Company',
+            hover_data=['Location'],
+            title="Top Companies by Hiring Frequency and Salary",
+            labels={'Avg. Salary': 'Average Salary ($)'}
+        )
+        
+        st.plotly_chart(fig, key="company_comparison")
+        
+        # Also show as a table
+        with st.expander("View Company Hiring Data"):
+            # Create a copy of the dataframe
+            display_df = company_df.copy()
+            # Display the dataframe
+            st.dataframe(display_df)
     
     # Next steps
     st.subheader("Next Steps")
@@ -187,6 +229,45 @@ def display_career_details(recommendation, user_profile):
             st.info(f"⟷ {outlook}")
         else:
             st.warning(f"📉 {outlook}")
+            
+        # Top companies hiring for this role
+        if 'top_companies' in recommendation and recommendation['top_companies']:
+            st.subheader("Top Companies Hiring")
+            company_data = pd.DataFrame(recommendation['top_companies'])
+            
+            # Create a bar chart of top companies by hiring frequency
+            fig_companies = px.bar(
+                company_data.head(5), 
+                x='name', 
+                y='hiring_frequency',
+                color='avg_salary',
+                color_continuous_scale='Viridis',
+                title=f"Top Companies Hiring for {recommendation['title']}",
+                labels={
+                    'name': 'Company',
+                    'hiring_frequency': 'Hiring Frequency',
+                    'avg_salary': 'Average Salary ($)'
+                }
+            )
+            
+            # Customize the chart
+            fig_companies.update_layout(
+                xaxis_tickangle=-45,
+                coloraxis_colorbar=dict(title="Avg Salary ($)")
+            )
+            
+            st.plotly_chart(fig_companies, key=f"companies_{recommendation['code']}")
+            
+            # Show company details in an expandable section
+            with st.expander("View Company Details"):
+                # Create a copy of the dataframe with selected columns
+                df_details = company_data[['name', 'location', 'avg_salary']].copy()
+                
+                # Rename columns
+                df_details.columns = ['Company', 'Location', 'Average Salary']
+                
+                # Set index and display
+                st.dataframe(df_details.set_index('Company'))
     
     with col2:
         # Match score gauge chart
@@ -213,7 +294,7 @@ def display_career_details(recommendation, user_profile):
             }
         ))
         
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, key=f"match_gauge_{recommendation['code']}")
         
         # Salary range
         st.subheader("Salary Range")
@@ -233,7 +314,7 @@ def display_career_details(recommendation, user_profile):
                     title="Salary Range",
                     labels={'Salary': 'Annual Salary ($)'})
         
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, key=f"salary_bar_{recommendation['code']}")
         
         # Skill match
         st.subheader("Skill Match")
@@ -260,7 +341,7 @@ def display_career_details(recommendation, user_profile):
             }
         ))
         
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, key=f"skill_gauge_{recommendation['code']}")
     
     # Skills section
     st.subheader("Skills Analysis")
