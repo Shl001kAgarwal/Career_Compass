@@ -140,13 +140,16 @@ def display_recommendations(recommendations, user_profile):
         if 'top_companies' in rec and rec['top_companies']:
             # Take top 2 companies from each career
             for i, company in enumerate(rec['top_companies'][:2]):
-                company_data.append({
-                    'Career': rec['title'],
-                    'Company': company['name'],
-                    'Avg. Salary': company['avg_salary'],
-                    'Location': company['location'],
-                    'Hiring Frequency': company['hiring_frequency']
-                })
+                try:
+                    company_data.append({
+                        'Career': rec['title'],
+                        'Company': company['name'],
+                        'Avg. Salary': company['avg_salary'],
+                        'Location': company['location'],
+                        'Hiring Frequency': company['hiring_frequency']
+                    })
+                except (KeyError, TypeError) as e:
+                    st.warning(f"Error adding company data: {str(e)}")
     
     if company_data:
         company_df = pd.DataFrame(company_data)
