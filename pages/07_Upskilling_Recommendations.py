@@ -55,7 +55,7 @@ def main():
         if st.button("Select a Different Career"):
             st.session_state.selected_career = None
             st.session_state.selected_skill_gaps = None
-            st._rerun()
+            st.rerun()
     
     # If no career is selected, let the user choose from recommendations
     if not selected_career:

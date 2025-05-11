@@ -66,7 +66,7 @@ def main():
                 else:
                     st.warning(f"{new_tech_skill} is already in your skills list.")
                 
-                st._rerun()
+                st.rerun()
         
         # Suggest common skills
         st.markdown("### Common Technical Skills")
@@ -88,7 +88,7 @@ def main():
                     if "technical" not in st.session_state.skills:
                         st.session_state.skills["technical"] = []
                     st.session_state.skills["technical"].append(skill)
-                    st._rerun()
+                    st.rerun()
         
         # Soft Skills Section
         st.subheader("Soft Skills")
@@ -138,7 +138,7 @@ def main():
                 else:
                     st.warning(f"{new_soft_skill} is already in your skills list.")
                 
-                st._rerun()
+                st.rerun()
         
         # Suggest common soft skills
         st.markdown("### Common Soft Skills")
@@ -160,7 +160,7 @@ def main():
                     if "soft" not in st.session_state.skills:
                         st.session_state.skills["soft"] = []
                     st.session_state.skills["soft"].append(skill)
-                    st._rerun()
+                    st.rerun()
         
         # Next steps and navigation
         st.markdown("---")
@@ -168,7 +168,7 @@ def main():
             st.success("Great job! You've identified your skills. Now let's assess your personality and interests.")
             if st.button("Continue to Personality Assessment"):
                 # Navigate to next page
-                st._rerun()
+                st.rerun()
         else:
             st.warning("Please add at least one skill before continuing.")
     

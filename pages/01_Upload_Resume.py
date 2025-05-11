@@ -110,7 +110,7 @@ def main():
         if st.button("Skip resume upload"):
             st.session_state.resume_data = None
             st.session_state.skills = {"technical": [], "soft": []}
-            st._rerun()
+            st.rerun()
 
 if __name__ == "__main__":
     main()

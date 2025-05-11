@@ -38,7 +38,7 @@ def main():
         # Allow changing the selection
         if st.button("Select a Different Career"):
             st.session_state.selected_career = None
-            st._rerun()
+            st.rerun()
     
     # If no career is selected, let the user choose from recommendations
     if not selected_career:
@@ -332,7 +332,7 @@ def display_career_path(path, year_labels, path_index):
                     salary_change = next_role['salary'] - role['salary']
                     salary_change_pct = (salary_change / role['salary']) * 100 if role['salary'] > 0 else 0
                     
-                    st.markdown(f"**Salary Change:** {'+" if salary_change >= 0 else ''}{salary_change:,} ({"+" if salary_change_pct >= 0 else ''}{salary_change_pct:.1f}%)")
+                    st.markdown(f"**Salary Change:** {'+' if salary_change >= 0 else ''}{salary_change:,} ({'+' if salary_change_pct >= 0 else ''}{salary_change_pct:.1f}%)")
 
 if __name__ == "__main__":
     main()

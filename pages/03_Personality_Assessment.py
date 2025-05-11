@@ -43,7 +43,7 @@ def main():
                 # Remove the RIASEC results to retake
                 if "riasec" in st.session_state.personality_results:
                     del st.session_state.personality_results["riasec"]
-                st._rerun()
+                st.rerun()
         else:
             # Display the RIASEC assessment questions
             st.subheader("Rate how much you enjoy the following activities:")
@@ -84,7 +84,7 @@ def main():
                     st.session_state.personality_results["riasec"] = riasec_scores
                     
                     # Refresh to display results
-                    st._rerun()
+                    st.rerun()
         
         # Learning Style Assessment (simplified)
         st.markdown("---")
@@ -112,7 +112,7 @@ def main():
                 # Remove the learning style results to retake
                 if "learning_style" in st.session_state.personality_results:
                     del st.session_state.personality_results["learning_style"]
-                st._rerun()
+                st.rerun()
         else:
             # Display the learning style assessment questions
             st.subheader("How do you prefer to learn new information?")
@@ -168,7 +168,7 @@ def main():
                     st.session_state.personality_results["learning_style"] = primary_style
                     
                     # Refresh to display results
-                    st._rerun()
+                    st.rerun()
         
         # Work Environment Preferences
         st.markdown("---")
@@ -221,7 +221,7 @@ def main():
                 # Remove the work environment results to retake
                 if "work_environment" in st.session_state.personality_results:
                     del st.session_state.personality_results["work_environment"]
-                st._rerun()
+                st.rerun()
         else:
             # Display the work environment assessment questions
             st.subheader("Rate your preference for each work environment:")
@@ -284,7 +284,7 @@ def main():
                     st.session_state.personality_results["work_environment"] = work_preferences
                     
                     # Refresh to display results
-                    st._rerun()
+                    st.rerun()
         
         # Navigation footer
         st.markdown("---")
@@ -292,7 +292,7 @@ def main():
             st.success("Great job! You've completed all personality assessments.")
             if st.button("Continue to Career Recommendations"):
                 # Navigate to next page
-                st._rerun()
+                st.rerun()
     
     with col2:
         st.image("https://pixabay.com/get/g06da8e6bc34e3ae8d5e45ddf920d033a6c7b690988fc5a183b66396fc0284cf59b1672104b38a5d29d25472ad2e5787a0c2e29a1e7a54c32df043a3d2f8845f3_1280.jpg", caption="Personality Assessment")
