@@ -1,7 +1,4 @@
 # Career_Compass
-
-A brief and friendly README template for the Career_Compass project. Replace placeholder sections with project-specific details (tech stack, commands, screenshots) to make this README fully accurate for your repository.
-
 ## Table of contents
 - [About](#about)
 - [Features](#features)
@@ -62,7 +59,7 @@ Core Dependencies
 - pypdf2 (>=3.0.1) - PDF resume parsing
 - plotly (>=6.0.1) - Interactive data visualizations
 - Git
-
+---
 ### Commands to Run Locally
 
 **Step 1:** Clone the Repository `git clone https://github.com/your-username/career-compass.git`
