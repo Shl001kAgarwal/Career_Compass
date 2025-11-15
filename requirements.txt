@@ -1,0 +1,12 @@
+pandas 
+numpy
+pathlib
+data
+streamlit
+utils
+plotly
+scikit-learn
+xgboost
+pyPDF2
+nltk
+spacy
